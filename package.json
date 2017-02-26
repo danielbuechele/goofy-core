@@ -1,0 +1,14 @@
+{
+  "name": "gooft-for-work",
+  "version": "1.0.4",
+  "description": "A desktop chat client for Workplace by Facebook",
+  "main": "src/main.js",
+  "author": "Daniel Büchele",
+  "license": "MIT",
+  "dependencies": {
+    "electron-config": "^0.2.1",
+    "electron-default-menu": "^1.0.0",
+    "fs-jetpack": "^0.10.5",
+    "menubar": "^5.2.0"
+  }
+}
