@@ -1,7 +1,7 @@
 {
-  "name": "gooft-for-work",
+  "name": "goofy-core",
   "version": "1.0.4",
-  "description": "A desktop chat client for Workplace by Facebook",
+  "description": "Common core used by Goofy and Goofy for Work",
   "main": "src/main.js",
   "author": "Daniel Büchele",
   "license": "MIT",
