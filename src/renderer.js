@@ -67,7 +67,11 @@ onload = () => {
 		});
 	}
 
-	if (domain) {
+	if (env.product === constants.PRODUCT_WWW) {
+		document.getElementById('webview').setAttribute('src', getURL());
+	}
+
+	if (domain || env.product === constants.PRODUCT_WWW) {
 		menu[1].submenu.push(
 			{
 				type: 'separator',
@@ -100,16 +104,12 @@ onload = () => {
 		);
 		document.getElementById('webview').setAttribute('src', getURL());
 	} else {
-		if (env.product === constants.PRODUCT_WWW) {
+		setup.className = 'active';
+		setup.onsubmit = () => {
+			let domain = setup.querySelector('input').value.trim();
+			userConfig.set('domain', domain);
 			document.getElementById('webview').setAttribute('src', getURL());
-		} else {
-			setup.className = 'active';
-			setup.onsubmit = () => {
-				let domain = setup.querySelector('input').value.trim();
-				userConfig.set('domain', domain);
-				document.getElementById('webview').setAttribute('src', getURL());
-			};
-		}
+		};
 	}
 
 	if (env.name === 'production') {
