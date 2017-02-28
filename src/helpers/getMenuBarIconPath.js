@@ -9,4 +9,4 @@ module.exports = (focus, unread) => {
 		mode = 'light';
 	}
 	return path.join(__dirname, '..', 'assets', `menu-workplace-${mode}-${unread ? 'unread' : 'read'}.png`);
-}
+};
