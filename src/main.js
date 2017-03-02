@@ -14,6 +14,7 @@ const userConfig = new Config();
 const getMenuBarIconPath = require('./helpers/getMenuBarIconPath');
 
 app.setName(env.appName);
+app.disableHardwareAcceleration();
 
 // menubar widget only available for Workplace right now
 const menubarEnabled = env.product === constants.PRODUCT_WORKPLACE && userConfig.get('menubar');
