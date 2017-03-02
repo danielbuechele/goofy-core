@@ -12,7 +12,7 @@ body {
 }
 
 /* Workplace toolbar */
-#pagelet_bluebar {
+#pagelet_bluebar, #fb2k_pagelet_bluebar {
 	display: none;
 }
 
