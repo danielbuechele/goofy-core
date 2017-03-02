@@ -4,6 +4,7 @@ module.exports = {
 	NEXT_CONVERSATION: 'next-conversation',
 	PREV_CONVERSATION: 'prev-conversation',
 	NOTIFICATION_COUNT: 'notification-count',
+	SHOW_SETTINGS: 'SHOW_SETTINGS',
 	PRODUCT_WORKPLACE: 'workplace',
 	PRODUCT_WWW: 'www',
 };

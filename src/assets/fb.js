@@ -14,9 +14,15 @@ const EMOJI = '_1ift';
 const MUTED = '_569x';
 const SELECTED_CONVERSATION = '._1ht2';
 const ACTIVATE_CONVERSATION = 'a._1ht5';
+const SETTINGS_BUTTON = '._1enh ._36ic ._4kzu a';
+const SETTINGS_LINK = '._5v-0._53il li:first-child a';
 
 ipcRenderer.on(constants.NEW_CONVERSATION, () => {
 	document.querySelector(NEW_MESSAGE_BUTTON).click();
+});
+
+ipcRenderer.on(constants.SHOW_SETTINGS, () => {
+	document.querySelector(SETTINGS_LINK).click();
 });
 
 ipcRenderer.on(constants.NEXT_CONVERSATION, () => {
@@ -38,8 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelector(UNREAD_MESSAGE_COUNT).addEventListener('DOMSubtreeModified', e => {
 		ipcRenderer.sendToHost(constants.DOCK_COUNT, parseInt(e.target.textContent) || 0);
 	});
-});
 
+	// load settings menu once, so it is inserted in the DOM
+	setTimeout(
+		() => {
+			document.querySelector(SETTINGS_BUTTON).click();
+		},
+		500
+	);
+});
 
 let waitForMessageListToLoad = () => {
 	if (document.querySelector(MESSAGE_LIST)) {
@@ -53,7 +66,10 @@ waitForMessageListToLoad();
 let watchMessageList = () => {
 	// init latestMessages
 	document.querySelector(MESSAGE_LIST).childNodes.forEach(message => {
-		latestMessages.set(message.querySelector(MESSAGE_ID).getAttribute('id'), messageWithEmojis(message.querySelector(MESSAGE_PREVIEW)));
+		latestMessages.set(
+			message.querySelector(MESSAGE_ID).getAttribute('id'),
+			messageWithEmojis(message.querySelector(MESSAGE_PREVIEW))
+		);
 	});
 
 	document.querySelector(MESSAGE_LIST).addEventListener('DOMSubtreeModified', () => {
@@ -67,7 +83,9 @@ let watchMessageList = () => {
 
 				// check if it's a message from myself
 				const preview = message.querySelector(MESSAGE_PREVIEW_EM);
-				const isMessageFromSelf = preview && preview.hasAttribute('data-intl-translation') && preview.getAttribute('data-intl-translation') !== '{conversation_snippet}';
+				const isMessageFromSelf = preview &&
+					preview.hasAttribute('data-intl-translation') &&
+					preview.getAttribute('data-intl-translation') !== '{conversation_snippet}';
 
 				const muted = message.classList.contains(MUTED);
 
@@ -100,34 +118,37 @@ function messageWithEmojis(node) {
 	return message;
 }
 
-
 // open links in new window
-setInterval(() => {
-	document.querySelectorAll('a').forEach(n => {
-		n.onclick = (e) => {
-			let { target } = e;
-			while (target && target.tagName !== 'A') {
-				target = target.parentElement;
-			}
-			let href = target.getAttribute('href') || target.getAttribute('data-href');
-			const path = location.pathname.split('/');
-			if (
-				!href || href === '#' || // buttons
-				href === '/new' || // new button
-				href && path.length > 1 && href.startsWith(`${location.origin}/${path[1]}`) || // links to other conversations
-				href && href.contains('.fbcdn.net/') // inline images in conversations
-			) {
-				return;
-			}
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			e.stopPropagation();
-			if (href && href.startsWith('/')) {
-				href = location.protocol + '//' + location.hostname + href;
-			}
-			if (href) {
-				shell.openExternal(href);
-			}
-		};
-	});
-}, 500);
+setInterval(
+	() => {
+		document.querySelectorAll('a').forEach(n => {
+			n.onclick = e => {
+				let { target } = e;
+				while (target && target.tagName !== 'A') {
+					target = target.parentElement;
+				}
+				let href = target.getAttribute('href') || target.getAttribute('data-href');
+				const path = location.pathname.split('/');
+				if (
+					!href ||
+					href === '#' || // buttons
+					href === '/new' || // new button
+					href && path.length > 1 && href.startsWith(`${location.origin}/${path[1]}`) || // links to other conversations
+					href && href.contains('.fbcdn.net/') // inline images in conversations
+				) {
+					return;
+				}
+				e.preventDefault();
+				e.stopImmediatePropagation();
+				e.stopPropagation();
+				if (href && href.startsWith('/')) {
+					href = location.protocol + '//' + location.hostname + href;
+				}
+				if (href) {
+					shell.openExternal(href);
+				}
+			};
+		});
+	},
+	500
+);

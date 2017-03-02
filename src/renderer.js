@@ -33,6 +33,21 @@ onload = () => {
 		],
 	});
 
+	menu[0].submenu.splice(
+		1,
+		0,
+		{
+			type: 'separator',
+		},
+		{
+			label: 'Preferences...',
+			accelerator: 'CmdOrCtrl+,',
+			click() {
+				webview.send(constants.SHOW_SETTINGS);
+			},
+		}
+	);
+
 	let windowMenu = menu[menu.findIndex(item => item.label === 'Window')];
 	windowMenu.submenu.push(
 		{
