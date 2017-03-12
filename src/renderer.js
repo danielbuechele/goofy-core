@@ -1,6 +1,6 @@
 const { BrowserWindow, app } = require('electron').remote;
 const remote = require('electron').remote;
-const { Menu, autoUpdater, dialog } = remote;
+const { Menu, autoUpdater, dialog, TouchBar } = remote;
 const defaultMenu = require('electron-default-menu');
 const fs = require('fs');
 const css = fs.readFileSync(__dirname + '/assets/fb.css', 'utf-8');
@@ -162,6 +162,25 @@ onload = () => {
 	webview.addEventListener('ipc-message', e => {
 		if (e.channel === constants.DOCK_COUNT) {
 			app.setBadgeCount(e.args[0]);
+		} else if (e.channel === constants.TOUCH_BAR) {
+			try {
+				const data = JSON.parse(e.args[0]);
+				remote.getCurrentWindow().setTouchBar(
+					new TouchBar(
+						data.map(
+							({ name, active, unread, id }) => new TouchBar.TouchBarButton({
+								label: unread ? `💬 ${name}` : name,
+								backgroundColor: active ? '#0084FF' : undefined,
+								click: () => {
+									webview.send(constants.JUMP_TO_CONVERATION, id);
+								},
+							})
+						)
+					)
+				);
+			} catch (e) {
+				//
+			}
 		}
 	});
 
