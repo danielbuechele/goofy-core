@@ -8,6 +8,7 @@ const env = require('./config/env.js');
 const Config = require('electron-config');
 const userConfig = new Config();
 const constants = require('./helpers/constants');
+const FocusHandler = require('./modules/focusHandler');
 let loginWindow;
 
 const getURL = (domain = userConfig.get('domain')) =>
@@ -209,4 +210,8 @@ onload = () => {
 			loginWindow.close();
 		}
 	});
+
+	// Ensure focus propagates when the application is focused
+	const webviewFocusHandler = new FocusHandler(webview);
+	app.on('browser-window-focus', webviewFocusHandler);
 };
