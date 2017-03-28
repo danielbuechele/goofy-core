@@ -12,6 +12,7 @@ const menubar = require('menubar');
 const Config = require('electron-config');
 const userConfig = new Config();
 const getMenuBarIconPath = require('./helpers/getMenuBarIconPath');
+const SettingsStorage = require('./modules/settingsStorage');
 
 app.setName(env.appName);
 app.disableHardwareAcceleration();
@@ -45,8 +46,27 @@ let mainWindow;
 let willQuitApp = false;
 
 function createWindow() {
+	const settings = new SettingsStorage(app);
+
+	// Open the app at the same screen position and size as last time, if possible
+	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset' };
+	const previousLayout = settings.get('windowLayout');
+	const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+	const screenWidth = displaySize.width;
+	const screenHeight = displaySize.height;
+	if (previousLayout) {
+		// Would the window fit on the screen with the previous layout?
+		if (previousLayout.width + previousLayout.x < screenWidth &&
+			previousLayout.height + previousLayout.y < screenHeight) {
+			windowLayout.width = previousLayout.width;
+			windowLayout.height = previousLayout.height;
+			windowLayout.x = previousLayout.x;
+			windowLayout.y = previousLayout.y;
+		}
+	}
+
 	// Create the browser window.
-	mainWindow = new BrowserWindow({ width: 800, height: 600, titleBarStyle: 'hidden-inset' });
+	mainWindow = new BrowserWindow(windowLayout);
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(
@@ -59,6 +79,12 @@ function createWindow() {
 
 	mainWindow.on('close', e => {
 		if (willQuitApp) {
+			// Store the main window's layout before quitting
+			const [ width, height ] = mainWindow.getSize();
+			const [ x, y ] = mainWindow.getPosition();
+			const currentLayout = { width, height, x, y };
+			settings.set('windowLayout', currentLayout);
+
 			// the user tried to quit the app
 			mainWindow = null;
 		} else {
