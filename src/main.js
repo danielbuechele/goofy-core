@@ -9,10 +9,8 @@ const env = require('./config/env.js');
 const os = require('os');
 const constants = require('./helpers/constants');
 const menubar = require('menubar');
-const Config = require('electron-config');
-const userConfig = new Config();
+const userConfig = require('./modules/userConfig');
 const getMenuBarIconPath = require('./helpers/getMenuBarIconPath');
-const SettingsStorage = require('./modules/settingsStorage');
 
 app.setName(env.appName);
 app.disableHardwareAcceleration();
@@ -46,11 +44,9 @@ let mainWindow;
 let willQuitApp = false;
 
 function createWindow() {
-	const settings = new SettingsStorage(app);
-
 	// Open the app at the same screen position and size as last time, if possible
 	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset' };
-	const previousLayout = settings.get('windowLayout');
+	const previousLayout = userConfig.get('windowLayout');
 	const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
 	const screenWidth = displaySize.width;
 	const screenHeight = displaySize.height;
@@ -83,7 +79,7 @@ function createWindow() {
 			const [ width, height ] = mainWindow.getSize();
 			const [ x, y ] = mainWindow.getPosition();
 			const currentLayout = { width, height, x, y };
-			settings.set('windowLayout', currentLayout);
+			userConfig.set('windowLayout', currentLayout);
 
 			// the user tried to quit the app
 			mainWindow = null;
