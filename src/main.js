@@ -45,8 +45,9 @@ let mainWindow;
 let willQuitApp = false;
 
 function createWindow() {
+	const title = env.product === constants.PRODUCT_WORKPLACE ? 'Goofy at Work' : 'Goofy';
 	// Create the browser window.
-	mainWindow = new BrowserWindow({ width: 800, height: 600, titleBarStyle: 'hidden-inset' });
+	mainWindow = new BrowserWindow({ width: 800, height: 600, titleBarStyle: 'hidden-inset', title });
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(
