@@ -49,15 +49,16 @@ function createWindow() {
 	const title = env.product === constants.PRODUCT_WORKPLACE ? 'Goofy at Work' : 'Goofy';
 
 	// Open the app at the same screen position and size as last time, if possible
-	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset' };
+	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset', title };
 	const previousLayout = userConfig.get('windowLayout');
 	const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
 	const screenWidth = displaySize.width;
 	const screenHeight = displaySize.height;
 	if (previousLayout) {
 		// Would the window fit on the screen with the previous layout?
-		if (previousLayout.width + previousLayout.x < screenWidth &&
-			previousLayout.height + previousLayout.y < screenHeight) {
+		if (
+			previousLayout.width + previousLayout.x < screenWidth && previousLayout.height + previousLayout.y < screenHeight
+		) {
 			windowLayout.width = previousLayout.width;
 			windowLayout.height = previousLayout.height;
 			windowLayout.x = previousLayout.x;
@@ -66,7 +67,7 @@ function createWindow() {
 	}
 
 	// Create the browser window.
-	mainWindow = new BrowserWindow({...windowLayout, title});
+	mainWindow = new BrowserWindow(windowLayout);
 
 	// Propagate retina resolution to requests if necessary
 	const requestFilter = new RequestFilter(session);

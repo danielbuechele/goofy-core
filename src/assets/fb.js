@@ -65,7 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function messageWithEmojis(node) {
 	let message = '';
-	node.querySelector('span').childNodes.forEach(n => {
+	if (node.querySelector('span')) {
+		node = node.querySelector('span');
+	}
+	node.childNodes.forEach(n => {
 		if (n.nodeType === 3) {
 			message += n.textContent;
 		} else if (n.nodeName === 'IMG' && n.classList.contains(EMOJI)) {
