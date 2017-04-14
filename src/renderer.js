@@ -5,9 +5,9 @@ const defaultMenu = require('electron-default-menu');
 const fs = require('fs');
 const css = fs.readFileSync(__dirname + '/assets/fb.css', 'utf-8');
 const env = require('./config/env.js');
-const Config = require('electron-config');
-const userConfig = new Config();
+const userConfig = require('./modules/userConfig');
 const constants = require('./helpers/constants');
+const FocusHandler = require('./modules/focusHandler');
 let loginWindow;
 
 const getURL = (domain = userConfig.get('domain')) =>
@@ -209,4 +209,8 @@ onload = () => {
 			loginWindow.close();
 		}
 	});
+
+	// Ensure focus propagates when the application is focused
+	const webviewFocusHandler = new FocusHandler(webview);
+	app.on('browser-window-focus', webviewFocusHandler);
 };
