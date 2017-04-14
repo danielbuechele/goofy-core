@@ -46,6 +46,8 @@ let mainWindow;
 let willQuitApp = false;
 
 function createWindow() {
+	const title = env.product === constants.PRODUCT_WORKPLACE ? 'Goofy at Work' : 'Goofy';
+
 	// Open the app at the same screen position and size as last time, if possible
 	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset' };
 	const previousLayout = userConfig.get('windowLayout');
@@ -64,7 +66,7 @@ function createWindow() {
 	}
 
 	// Create the browser window.
-	mainWindow = new BrowserWindow(windowLayout);
+	mainWindow = new BrowserWindow({...windowLayout, title});
 
 	// Propagate retina resolution to requests if necessary
 	const requestFilter = new RequestFilter(session);
