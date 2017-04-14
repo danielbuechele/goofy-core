@@ -5,12 +5,14 @@ const dialog = electron.dialog;
 const path = require('path');
 const url = require('url');
 const app = electron.app;
+const session = electron.session;
 const env = require('./config/env.js');
 const os = require('os');
 const constants = require('./helpers/constants');
 const menubar = require('menubar');
 const userConfig = require('./modules/userConfig');
 const getMenuBarIconPath = require('./helpers/getMenuBarIconPath');
+const RequestFilter = require('./modules/requestFilter');
 
 app.setName(env.appName);
 app.disableHardwareAcceleration();
@@ -63,6 +65,14 @@ function createWindow() {
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow(windowLayout);
+
+	// Propagate retina resolution to requests if necessary
+	const requestFilter = new RequestFilter(session);
+	const display = electron.screen.getPrimaryDisplay();
+	const scaleFactor = display.scaleFactor;
+	if (scaleFactor !== 1.0) {
+		requestFilter.setRetinaCookie(scaleFactor);
+	}
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(
