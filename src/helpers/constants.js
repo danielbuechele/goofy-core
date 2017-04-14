@@ -9,4 +9,5 @@ module.exports = {
 	JUMP_TO_CONVERATION: 'JUMP_TO_CONVERATION',
 	PRODUCT_WORKPLACE: 'workplace',
 	PRODUCT_WWW: 'www',
+	SETTINGS_STORAGE: 'settings.json',
 };

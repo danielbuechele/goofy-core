@@ -5,13 +5,14 @@ const dialog = electron.dialog;
 const path = require('path');
 const url = require('url');
 const app = electron.app;
+const session = electron.session;
 const env = require('./config/env.js');
 const os = require('os');
 const constants = require('./helpers/constants');
 const menubar = require('menubar');
-const Config = require('electron-config');
-const userConfig = new Config();
+const userConfig = require('./modules/userConfig');
 const getMenuBarIconPath = require('./helpers/getMenuBarIconPath');
+const RequestFilter = require('./modules/requestFilter');
 
 app.setName(env.appName);
 app.disableHardwareAcceleration();
@@ -46,8 +47,34 @@ let willQuitApp = false;
 
 function createWindow() {
 	const title = env.product === constants.PRODUCT_WORKPLACE ? 'Goofy at Work' : 'Goofy';
+
+	// Open the app at the same screen position and size as last time, if possible
+	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset' };
+	const previousLayout = userConfig.get('windowLayout');
+	const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+	const screenWidth = displaySize.width;
+	const screenHeight = displaySize.height;
+	if (previousLayout) {
+		// Would the window fit on the screen with the previous layout?
+		if (previousLayout.width + previousLayout.x < screenWidth &&
+			previousLayout.height + previousLayout.y < screenHeight) {
+			windowLayout.width = previousLayout.width;
+			windowLayout.height = previousLayout.height;
+			windowLayout.x = previousLayout.x;
+			windowLayout.y = previousLayout.y;
+		}
+	}
+
 	// Create the browser window.
-	mainWindow = new BrowserWindow({ width: 800, height: 600, titleBarStyle: 'hidden-inset', title });
+	mainWindow = new BrowserWindow({...windowLayout, title});
+
+	// Propagate retina resolution to requests if necessary
+	const requestFilter = new RequestFilter(session);
+	const display = electron.screen.getPrimaryDisplay();
+	const scaleFactor = display.scaleFactor;
+	if (scaleFactor !== 1.0) {
+		requestFilter.setRetinaCookie(scaleFactor);
+	}
 
 	// and load the index.html of the app.
 	mainWindow.loadURL(
@@ -60,6 +87,12 @@ function createWindow() {
 
 	mainWindow.on('close', e => {
 		if (willQuitApp) {
+			// Store the main window's layout before quitting
+			const [ width, height ] = mainWindow.getSize();
+			const [ x, y ] = mainWindow.getPosition();
+			const currentLayout = { width, height, x, y };
+			userConfig.set('windowLayout', currentLayout);
+
 			// the user tried to quit the app
 			mainWindow = null;
 		} else {
