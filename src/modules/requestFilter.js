@@ -8,30 +8,24 @@ module.exports = function RequestFilter(session) {
 		urls: [ 'https://*.facebook.com' ],
 	};
 
-	function ensureRetinaCookie(details) {
-		const delimiter = '; ';
-		const newCookie = `dpr=${retinaCookie}`;
-		const cookieString = details.requestHeaders.Cookie || '';
-		const cookies = cookieString.split(delimiter);
-
-		// Check if the resolution cookie is set, if so, replace it, otherwise append it
-		const wasSet = cookies.reduce((wasSet, cookie, index) => {
-			if (cookie.match(/dpr=/)) {
-				cookies[index] = newCookie;
-				return true;
-			}
-			return wasSet;
-		}, false);
-		if (!wasSet) {
-			cookies.push(newCookie);
-		}
-		details.requestHeaders.Cookie = cookies.join(delimiter);
-	}
-
 	session.defaultSession.webRequest.onBeforeSendHeaders(filter, (details, callback) => {
+		const delimiter = '; ';
+		const cookieStrings = (details.requestHeaders.Cookie || '').split(delimiter);
+
+		const cookieMap = cookieStrings.reduce((map, item) => {
+			const [ name, value ] = item.split('=');
+			if (!name) {return map;}
+			map[name] = value;
+			return map;
+		}, {});
+
 		if (retinaCookie) {
-			ensureRetinaCookie(details);
+			cookieMap.dpr = retinaCookie;
 		}
+
+		const newCookieString = Object.keys(cookieMap).map(name => `${name}=${cookieMap[name]}`).join(delimiter);
+		details.requestHeaders.Cookie = newCookieString;
+
 		const resolve = {
 			cancel: false,
 			requestHeaders: details.requestHeaders,
