@@ -51,18 +51,24 @@ function createWindow() {
 	// Open the app at the same screen position and size as last time, if possible
 	let windowLayout = { width: 800, height: 600, titleBarStyle: 'hidden-inset', title };
 	const previousLayout = userConfig.get('windowLayout');
-	const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
-	const screenWidth = displaySize.width;
-	const screenHeight = displaySize.height;
-	if (previousLayout) {
-		// Would the window fit on the screen with the previous layout?
-		if (
-			previousLayout.width + previousLayout.x < screenWidth && previousLayout.height + previousLayout.y < screenHeight
-		) {
-			windowLayout.width = previousLayout.width;
-			windowLayout.height = previousLayout.height;
-			windowLayout.x = previousLayout.x;
-			windowLayout.y = previousLayout.y;
+	// BUG: Electron issue?
+	// The docs (https://github.com/electron/electron/blob/master/docs/api/screen.md)
+	// say electron.screen should be available after the ready event has fired, but
+	// sometimes it's null
+	if (electron.screen) {
+		const displaySize = electron.screen.getPrimaryDisplay().workAreaSize;
+		const screenWidth = displaySize.width;
+		const screenHeight = displaySize.height;
+		if (previousLayout) {
+			// Would the window fit on the screen with the previous layout?
+			if (
+				previousLayout.width + previousLayout.x < screenWidth && previousLayout.height + previousLayout.y < screenHeight
+			) {
+				windowLayout.width = previousLayout.width;
+				windowLayout.height = previousLayout.height;
+				windowLayout.x = previousLayout.x;
+				windowLayout.y = previousLayout.y;
+			}
 		}
 	}
 
