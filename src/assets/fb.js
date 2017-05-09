@@ -1,4 +1,4 @@
-const { ipcRenderer, shell } = require('electron');
+const { ipcRenderer } = require('electron');
 const constants = require('../helpers/constants');
 let latestMessages;
 
