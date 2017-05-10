@@ -1,4 +1,4 @@
-const { BrowserWindow, app } = require('electron').remote;
+const { BrowserWindow, app, shell } = require('electron').remote;
 const remote = require('electron').remote;
 const { Menu, autoUpdater, dialog, TouchBar } = remote;
 const defaultMenu = require('electron-default-menu');
@@ -208,6 +208,10 @@ onload = () => {
 		} else if (newURL.startsWith(getURL()) && loginWindow) {
 			loginWindow.close();
 		}
+	});
+
+	webview.addEventListener('new-window', ({ url }) => {
+		shell.openExternal(url);
 	});
 
 	// Ensure focus propagates when the application is focused

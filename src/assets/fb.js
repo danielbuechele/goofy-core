@@ -1,4 +1,4 @@
-const { ipcRenderer, shell } = require('electron');
+const { ipcRenderer } = require('electron');
 const constants = require('../helpers/constants');
 let latestMessages;
 
@@ -86,36 +86,6 @@ setInterval(() => {}, 400);
 
 setInterval(
 	() => {
-		// open links in new window
-		document.querySelectorAll('a').forEach(n => {
-			n.onclick = e => {
-				let { target } = e;
-				while (target && target.tagName !== 'A') {
-					target = target.parentElement;
-				}
-				let href = target.getAttribute('href') || target.getAttribute('data-href');
-				const path = location.pathname.split('/');
-				if (
-					!href ||
-					href === '#' || // buttons
-					href === '/new' || // new button
-					href && path.length > 1 && href.startsWith(`${location.origin}/${path[1]}`) || // links to other conversations
-					href && href.contains('.fbcdn.net/') // inline images in conversations
-				) {
-					return;
-				}
-				e.preventDefault();
-				e.stopImmediatePropagation();
-				e.stopPropagation();
-				if (href && href.startsWith('/')) {
-					href = location.protocol + '//' + location.hostname + href;
-				}
-				if (href) {
-					shell.openExternal(href);
-				}
-			};
-		});
-
 		// send notifications
 		if (document.querySelector(MESSAGE_LIST)) {
 			if (!latestMessages) {
