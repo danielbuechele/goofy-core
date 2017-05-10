@@ -92,3 +92,8 @@ body {
 			._1q5- ._5742 ._fl2 ._30yy:not([data-testid="info_panel_button"]) {
 				display: none;
 			}
+
+/* Fix broken conversation settings menu layout */
+._5v-0[style] {
+	left: auto !important;
+}
