@@ -17,7 +17,7 @@ const MUTED = '_569x';
 const SELECTED_CONVERSATION = '._1ht2';
 const ACTIVATE_CONVERSATION = 'a._1ht5';
 const SETTINGS_BUTTON = '._1enh ._36ic ._4kzu a';
-const SETTINGS_LINK = '._5v-0._53il li:first-child a';
+const SETTINGS_LINK = '._54ni.__MenuItem:first-child';
 
 ipcRenderer.on(constants.NEW_CONVERSATION, () => {
 	document.querySelector(NEW_MESSAGE_BUTTON).click();
