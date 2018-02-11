@@ -100,7 +100,8 @@ setInterval(
 			} else {
 				document.querySelector(MESSAGE_LIST).childNodes.forEach(message => {
 					const id = message.querySelector(MESSAGE_ID).getAttribute('id');
-					const messageBody = messageWithEmojis(message.querySelector(MESSAGE_PREVIEW));
+					const messageElement = message.querySelector(MESSAGE_PREVIEW);
+					const messageBody = messageWithEmojis(messageElement);
 
 					if (latestMessages.get(id) !== messageBody) {
 						const name = message.querySelector(MESSAGE_SENDER).textContent;
@@ -110,7 +111,10 @@ setInterval(
 						const preview = message.querySelector(MESSAGE_PREVIEW_EM);
 						const isMessageFromSelf = preview &&
 							preview.hasAttribute('data-intl-translation') &&
-							preview.getAttribute('data-intl-translation') !== '{conversation_snippet}';
+							preview.getAttribute('data-intl-translation') !== '{conversation_snippet}' ||
+                            messageElement.childNodes[0] &&
+                            messageElement.childNodes[0].nodeName === '#text'
+						;
 
 						const muted = message.classList.contains(MUTED);
 
